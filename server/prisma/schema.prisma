@@ -1,0 +1,74 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
+  passwordHash     String
+  name             String
+  university       String
+  dept             String
+  year             String
+  skill            String    // Main skill to teach
+  wants            String    // Main skill to learn
+  level            String    // "Beginner" | "Intermediate" | "Advanced" | "Expert"
+  rating           Float     @default(5.0)
+  reviewsCount     Int       @default(0)
+  avatarIdx        Int       @default(0)
+  availability     String    @default("Online") // "Online" | "In-Person" | "Hybrid"
+  bio              String    @default("")
+  role             String    @default("student") // "student" | "admin"
+  isApproved       Boolean   @default(true)      // True for general users, false for pending approvals
+  skillsTeaching   String    @default("[]")      // JSON string of skills: e.g. '["Machine Learning", "Python"]'
+  skillsLearning   String    @default("[]")      // JSON string of skills: e.g. '["UX/UI Design", "Figma"]'
+  
+  sessionsRequested Session[] @relation("RequesterRelation")
+  sessionsReceived  Session[] @relation("ReceiverRelation")
+  
+  messagesSent      Message[] @relation("MessageSenderRelation")
+  messagesReceived  Message[] @relation("MessageReceiverRelation")
+  
+  reviewsWritten    Review[]  @relation("ReviewerRelation")
+  reviewsReceived   Review[]  @relation("RevieweeRelation")
+}
+
+model Session {
+  id          Int      @id @default(autoincrement())
+  requesterId Int
+  requester   User     @relation("RequesterRelation", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiverId  Int
+  receiver    User     @relation("ReceiverRelation", fields: [receiverId], references: [id], onDelete: Cascade)
+  skill       String
+  date        String   // String format for matching existing calendar UI
+  time        String   // String format for matching UI
+  status      String   @default("pending") // "pending" | "approved" | "rejected" | "completed"
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  senderId   Int
+  sender     User     @relation("MessageSenderRelation", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId Int
+  receiver   User     @relation("MessageReceiverRelation", fields: [receiverId], references: [id], onDelete: Cascade)
+  text       String
+  time       String   // String formatted time (e.g., "10:23 AM" or date string)
+  isFile     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  reviewerId Int
+  reviewer   User     @relation("ReviewerRelation", fields: [reviewerId], references: [id], onDelete: Cascade)
+  revieweeId Int
+  reviewee   User     @relation("RevieweeRelation", fields: [revieweeId], references: [id], onDelete: Cascade)
+  rating     Int
+  comment    String
+  createdAt  DateTime @default(now())
+}
