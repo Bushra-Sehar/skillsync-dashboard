@@ -30,7 +30,7 @@ const SKILL_OPTIONS = [
   "Cybersecurity", "Cloud Computing", "AWS", "Docker", "Blockchain",
 ];
 
-const API_URL = "";
+const API_URL = "https://skillsync-dashboard.onrender.com";
 
 async function apiFetch(path: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
