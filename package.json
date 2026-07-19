@@ -1,9 +1,11 @@
 {
   "name": "@figma/my-make-file",
   "private": true,
-  "version": "0.0.1",
+  "homepage": "https://bushra-sehar.github.io/skillsync-dashboard/",
   "type": "module",
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "build": "vite build",
     "dev:frontend": "vite",
     "dev:backend": "npm --prefix server run dev",
